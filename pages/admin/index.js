@@ -2,8 +2,19 @@ import React, { useState } from 'react';
 import { addDoc, collection, getFirestore } from 'firebase/firestore';
 import withAuth from "../../components/withAuth";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import useAuth from '../../hooks/useAuth';
+import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 
 const AdminPage = () => {
+  const user = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!user || !user.isAdmin) {
+      router.push('/login');
+    }
+  }, [user, router]);
     const [post, setPost] = useState({
         title: '',
         text: '',
