@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { getAuth, RecaptchaVerifier } from 'firebase/auth';
 
 function ReCAPTCHA({ onVerify }) {

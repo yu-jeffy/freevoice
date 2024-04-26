@@ -1,25 +1,28 @@
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { onAuthStateChanged, getAuth } from "firebase/auth";
 
 const withAuth = (Component) => {
-  return (props) => {
+  return function WithAuth(props) {
     const Router = useRouter();
     const [verified, setVerified] = useState(false);
 
     useEffect(() => {
       const auth = getAuth();
-      onAuthStateChanged(auth, (user) => {
-        if (!user) {
-          Router.push('/auth/login');
-        } else {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        if (user) {
           setVerified(true);
+        } else {
+          Router.push('/auth/login');
         }
       });
+
+      // Cleanup on unmount, avoid memory leaks
+      return () => unsubscribe();
     }, [Router]);
 
     if (!verified) {
-      return <div>Loading...</div>; // Or any other loading state indication
+      return <div>Loading...</div>;
     }
 
     return <Component {...props} />;
